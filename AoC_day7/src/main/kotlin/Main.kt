@@ -72,13 +72,13 @@ fun rankAllHand(FvoaCData: List<Hand>, FroaCData: List<Hand>, FHData: List<Hand>
 fun rankHandSection(bigArray: List<Hand>, rankingArray: List<Hand>): List<Hand> {
     val bigList: MutableList<Hand> = bigArray.toMutableList()
 
-    val ranklist: List<Char> = listOf('2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A')
+    val rankList: List<Char> = listOf('J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A')
 
-    ranklist.forEach { first ->
-        ranklist.forEach { second ->
-            ranklist.forEach { third ->
-                ranklist.forEach { fourth ->
-                    ranklist.forEach { fifth ->
+    rankList.forEach { first ->
+        rankList.forEach { second ->
+            rankList.forEach { third ->
+                rankList.forEach { fourth ->
+                    rankList.forEach { fifth ->
                         rankingArray.forEach { hand ->
                             val string = first.toString()+second.toString()+third.toString()+fourth.toString()+fifth.toString()
 
@@ -96,6 +96,15 @@ fun rankHandSection(bigArray: List<Hand>, rankingArray: List<Hand>): List<Hand> 
 }
 
 fun getHandType(hand: Hand): HandTypes {
+    return if ('J' in hand.string) {
+        getHandTypeWJ(hand)
+    }
+    else {
+        getHandTypeWoJ(hand)
+    }
+}
+
+fun getHandTypeWoJ(hand: Hand): HandTypes {
     val string = hand.string
 
     val charTypes: MutableList<charTypes> = mutableListOf()
@@ -137,6 +146,56 @@ fun getHandType(hand: Hand): HandTypes {
         return HandTypes.OnePair
     }
     return HandTypes.HighCard
+}
+
+fun getHandTypeWJ(hand: Hand): HandTypes {
+    val string = hand.string
+
+    val charTypes: MutableList<charTypes> = mutableListOf()
+
+    string.forEach { char ->
+        var found = false
+        charTypes.forEach { it ->
+            if(it.char == char) {
+                it.count += 1
+                found = true
+            }
+        }
+
+        if (!found) {
+            charTypes.add(charTypes(1, char))
+        }
+    }
+
+    val jester = charTypes.find { it.char == 'J' } ?: TODO()
+
+    if (charTypes.size <= 2) {
+        return HandTypes.FiveOfAKind
+    }
+    charTypes.forEach {
+        if (it.char != 'J') {
+            val number = it.count + jester.count
+            if (number == 4) {
+                return HandTypes.FourOfAKind
+            }
+        }
+    }
+
+    charTypes.forEach {
+        if (it.char != 'J') {
+            val number = it.count + jester.count
+            if (number == 3) {
+                if (charTypes.size == 3) {
+                    return HandTypes.FullHouse
+                }
+                else {
+                    return HandTypes.ThreeOfAKind
+                }
+            }
+        }
+    }
+
+    return HandTypes.OnePair
 }
 
 enum class HandTypes {
