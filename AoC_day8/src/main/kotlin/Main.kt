@@ -30,8 +30,10 @@ fun partTwo() {
 
     var locationList = getStartingLocations(data)
 
+    println(locationList)
+
     var searching = true
-    var steps = 0
+    var steps: Long = 0
 
     while (searching) {
         directions.forEach { direction ->
@@ -39,6 +41,7 @@ fun partTwo() {
             steps += 1
             if (endReached(locationList)) {
                 searching = false
+                println(steps)
             }
         }
     }
@@ -82,7 +85,7 @@ fun getStartingLocations(data: List<MapElement>): List<MapElement> {
 
 fun endReached(locations: List<MapElement>): Boolean {
     locations.forEach { location ->
-        if (location.name.last() != 'Z') {
+        if (location.name[2] != 'Z') {
             return false
         }
     }
