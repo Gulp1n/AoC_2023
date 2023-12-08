@@ -28,6 +28,67 @@ fun partTwo() {
     val directions = directionData
     val data = getData()
 
+    val locationList = getStartingLocations(data)
+    val stepsList: MutableList<Int> = mutableListOf()
+
+    println(locationList)
+
+    locationList.forEach { location ->
+        stepsList.add(calculateSteps(location, directions, data))
+    }
+
+    println(stepsList)
+
+    val steps = calculateBigLCM(stepsList)
+    println(steps)
+}
+
+fun calculateBigLCM(list: List<Int>): Long {
+    var number: Long = list[0].toLong()
+    for (i in 1..<list.size) {
+        println(i)
+        number = getLCM(number, list[i].toLong())
+    }
+    return number
+}
+
+// this funcion was coppied :( (I am tired and need to study)
+fun getLCM(a: Long, b: Long): Long {
+    val larger = if (a > b) a else b
+    val maxLcm = a * b
+    var lcm = larger
+    while (lcm <= maxLcm) {
+        if (lcm % a == 0L && lcm % b == 0L) {
+            return lcm
+        }
+        lcm += larger
+    }
+    return maxLcm
+}
+
+fun calculateSteps(locationPoint: MapElement, directions: String, data: List<MapElement>): Int {
+    var location = locationPoint
+
+    var searching = true
+    var steps: Int = 0
+
+    while (searching) {
+        directions.forEach { direction ->
+            location = getNextLocation(location, direction, data)
+            steps += 1
+            if (location.name.last() == 'Z') {
+                searching = false
+                return steps
+            }
+        }
+    }
+    return steps
+}
+
+fun partTwoOld() {
+    val directions = directionData
+    val data = getData()
+
     var locationList = getStartingLocations(data)
 
     println(locationList)
