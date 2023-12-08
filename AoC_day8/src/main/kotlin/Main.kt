@@ -52,7 +52,6 @@ fun calculateBigLCM(list: List<Int>): Long {
     return number
 }
 
-// this funcion was coppied :( (I am tired and need to study)
 fun getLCM(a: Long, b: Long): Long {
     val larger = if (a > b) a else b
     val maxLcm = a * b
