@@ -26,10 +26,10 @@ fun partOne() {
 
 fun getPreviousNumber(data: List<Int>): Int {
     val list = getFirstNumbersList(data)
-    var number: Int = list[0]
+    var number: Int = 0
 
-    for (i in 1..list.lastIndex) {
-        number = list[i] - number
+    list.forEach { it ->
+        number = it - number
     }
 
     return number
@@ -41,10 +41,10 @@ fun getFirstNumbersList(data: List<Int>): List<Int> {
 
     while (true) {
         list = getDif(list)
-        startNumber.add(list[0])
         if (allZeros(list)) {
             break
         }
+        startNumber.add(list[0])
     }
 
     return startNumber.toList().reversed()
@@ -121,7 +121,7 @@ class Tests() {
     @Test
     fun getFirstNumberListTest() {
         val data = listOf(10, 13, 16, 21, 30, 45)
-        val expected = listOf(0, 2, 0, 3, 10)
+        val expected = listOf(2, 0, 3, 10)
         assertEquals(expected, getFirstNumbersList(data))
     }
 }
