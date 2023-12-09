@@ -3,7 +3,16 @@ import org.testng.annotations.Test
 import kotlin.math.abs
 
 fun main() {
-    partOne()
+    partTwo()
+}
+
+fun partTwo() {
+    val res = getData().map { item ->
+        getPreviousNumber(item)
+    }
+
+    println(res)
+    println(res.sum())
 }
 
 fun partOne() {
@@ -13,6 +22,32 @@ fun partOne() {
 
     println(res)
     println(res.sum())
+}
+
+fun getPreviousNumber(data: List<Int>): Int {
+    val list = getFirstNumbersList(data)
+    var number: Int = list[0]
+
+    for (i in 1..list.lastIndex) {
+        number = list[i] - number
+    }
+
+    return number
+}
+
+fun getFirstNumbersList(data: List<Int>): List<Int> {
+    val startNumber: MutableList<Int> = mutableListOf(data[0])
+    var list = data
+
+    while (true) {
+        list = getDif(list)
+        startNumber.add(list[0])
+        if (allZeros(list)) {
+            break
+        }
+    }
+
+    return startNumber.toList().reversed()
 }
 
 fun getNextValue(data: List<Int>): Int {
@@ -33,7 +68,7 @@ fun getNextValue(data: List<Int>): Int {
 fun getDif(data: List<Int>): List<Int> {
     val list: MutableList<Int> = mutableListOf()
     for (i in 1..data.lastIndex) {
-        val res = data[i]-data[i-1]
+        val res = (data[i]-data[i-1])
         list.add(res)
     }
     return list.toList()
@@ -75,5 +110,18 @@ class Tests() {
         val data = "13 14 13 10 5 -2 -11 -22 -35 -50 -67 -86 -107 -130 -155 -182 -211 -242 -275 -310 -347"
         val expected = listOf(13, 14, 13, 10, 5, -2, -11, -22, -35, -50, -67, -86, -107, -130, -155, -182, -211, -242, -275, -310, -347)
         assertEquals(expected, parseString(data))
+    }
+
+    @Test
+    fun getPreviousNumberTest() {
+        val data = listOf(10, 13, 16, 21, 30, 45)
+        assertEquals(5, getPreviousNumber(data))
+    }
+
+    @Test
+    fun getFirstNumberListTest() {
+        val data = listOf(10, 13, 16, 21, 30, 45)
+        val expected = listOf(0, 2, 0, 3, 10)
+        assertEquals(expected, getFirstNumbersList(data))
     }
 }
