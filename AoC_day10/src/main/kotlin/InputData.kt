@@ -150,7 +150,7 @@ val sampleData = listOf(
 )
 
 val secondSampleData = listOf(
-"..F7.",
+"FJF7.",
 ".FJ|.",
 "SJ.L7",
 "|F--J",
