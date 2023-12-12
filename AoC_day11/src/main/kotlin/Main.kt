@@ -3,51 +3,15 @@ import org.testng.annotations.Test
 import kotlin.math.abs
 
 fun main() {
-    partOne()
+    partTwo()
 }
 
-fun List<String>.parse(): List<List<Char>> {
-    val pp: MutableList<String> = mutableListOf()
-    this.forEach { string ->
-        if ('#' !in string) {
-            pp.add(string)
-        }
-        pp.add(string)
-    }
-
-    val numbers: MutableList<Int> = mutableListOf()
-
-    for (i in 0..pp.first().lastIndex) {
-        var valid = true
-        pp.forEach { it ->
-            if (it[i] == '#') valid = false
-        }
-        if (valid) numbers.add(i)
-    }
-
-    numbers.forEachIndexed { count, i ->
-        pp.forEachIndexed { index, str ->
-            val string = StringBuilder(str)
-            string.insert(i+count, '.')
-            pp[index] = string.toString()
-        }
-    }
-
-    return pp.map {
-        it.toList()
-    }.toList()
-}
-
-fun partOne() {
+fun partTwo() {
     val data = inputData.parse()
+    val empty = data.getEmptySpace()
+    val locations = data.getLocations(empty)
 
-    data.forEach { it ->
-        println(it.toString())
-    }
-    val locations = data.getLocations()
-
-    val pairList: MutableList<Int> = mutableListOf()
-
+    val pairList: MutableList<Long> = mutableListOf()
     for (i in 0..<locations.lastIndex) {
         locations[i].getPairs(locations, i).forEach { it ->
             pairList.add(it)
@@ -57,41 +21,70 @@ fun partOne() {
     println(pairList.sum())
 }
 
-private fun Location.getPairs(list: List<Location>, startNum: Int): List<Int> {
+fun List<String>.parse() = this.map { it.toList() }
+
+fun List<List<Char>>.getEmptySpace(): Emptiness {
+    val y: MutableList<Int> = mutableListOf()
+    this.forEachIndexed { i, string ->
+        if ('#' !in string) y.add(i)
+    }
+
+    val x: MutableList<Int> = mutableListOf()
+    this.first().indices.forEachIndexed { i, _ ->
+        var valid = true
+        this.forEach { it ->
+            if (it[i] == '#') valid = false
+        }
+        if (valid) x.add(i)
+    }
+
+    return Emptiness(x.toList(), y.toList())
+}
+
+data class Emptiness(val x: List<Int>, val y: List<Int>,)
+
+private fun List<List<Char>>.getLocations(emptiness: Emptiness): List<Location> {
+    val locations: MutableList<Location> = mutableListOf()
+
+    this.forEachIndexed { y, list ->
+        list.forEachIndexed { x, char ->
+            if (char == '#') {
+                var xCord = x.toLong()
+                var yCord = y.toLong()
+                emptiness.x.forEach {
+                    if (it < x) xCord += 999999
+                }
+                emptiness.y.forEach {
+                    if (it < y) yCord += 999999
+                }
+                locations.add(Location(xCord, yCord))
+            }
+        }
+    }
+
+    return locations.toList()
+}
+
+data class Location(val x: Long, val y: Long)
+
+private fun Location.getPairs(list: List<Location>, startNum: Int): List<Long> {
     val range = startNum+1..list.lastIndex
 
-    val pairList: MutableList<Int> = mutableListOf()
+    val pairList: MutableList<Long> = mutableListOf()
 
     range.forEach { i ->
-        pairList.add(
-            calculateDistance(this, list[i])
-        )
+        pairList.add(calculateDistance(this, list[i]))
     }
 
     return pairList.toList()
 }
 
-private fun calculateDistance(first: Location, second: Location): Int {
-    val deltaX = abs(first.x - second.x)
-    val deltaY = abs(first.y - second.y)
+private fun calculateDistance(first: Location, second: Location): Long {
+    val deltaX: Long = abs(first.x - second.x)
+    val deltaY: Long = abs(first.y - second.y)
 
     return deltaX+deltaY
 }
-
-private fun List<List<Char>>.getLocations(): List<Location> {
-    val pp: MutableList<Location> = mutableListOf()
-    this.forEachIndexed { y, list ->
-        list.forEachIndexed { x, char ->
-            if (char == '#') {
-                pp.add(Location(x, y))
-            }
-        }
-    }
-
-    return pp.toList()
-}
-
-data class Location(val x: Int, val y: Int)
 
 private fun List<Any>.println() {
     this.forEach {
@@ -100,41 +93,17 @@ private fun List<Any>.println() {
 }
 
 class Tests {
-
     @Test
-    fun testParse() {
+    fun test() {
+        val data = sampleData.parse()
+
+        val empty = data.getEmptySpace()
+
+        val locations = data.getLocations(empty)
+
         assertEquals(
-            parseTestExpected,
-            sampleData.parse()
-        )
-    }
-
-    @Test
-    fun testGetLocations() {
-        val expected = listOf(
-        Location(4, 0),
-        Location(9, 1),
-        Location(0, 2),
-        Location(8, 5),
-        Location(1, 6),
-        Location(12, 7),
-        Location(9, 10),
-        Location(0, 11),
-        Location(5, 11),
-        )
-        
-        assertEquals(expected,
-            sampleData.parse().getLocations())
-    }
-
-    @Test
-    fun testCalculateDistance() {
-        assertEquals(
-            9,
-            calculateDistance(
-                Location(1, 6),
-                Location(5, 11)
+            Location(1000002, 0),
+            locations[0]
             )
-        )
     }
 }
