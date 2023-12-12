@@ -1,7 +1,7 @@
 fun List<String>.parse(): List<RowData> {
     return this.map { string ->
         val res = string.split(" ")
-        val numbers = """[0-9"]""".toRegex().findAll(res[1]).toList() ?: TODO()
+        val numbers = """[0-9"]+""".toRegex().findAll(res[1]).toList()
 
         RowData(
             res[0],
